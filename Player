@@ -1,0 +1,107 @@
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Graphics;
+import java.awt.Rectangle;
+import java.awt.geom.Area;
+import java.awt.geom.Rectangle2D;
+
+
+public class Player extends GameObject
+{
+	public Integer deathCount = 0;
+	public Integer wins = 0;
+	
+	private Rectangle rekt;
+	private Rectangle2D playerRekt;
+	private Dimension dim;
+	
+	int count;
+	
+	int xVel = 0;
+	
+	public Player(int x, int y, ID n)
+	{
+		super(x, y, n);
+		
+		dim = new Dimension(25,25);
+		
+		rekt = new Rectangle(x,y,25,25);	
+		playerRekt = rekt; 
+	}
+	
+	public void setXVel(int n)
+	{
+		xVel = n;
+	}
+	
+	public Area getPlayerRekt()
+	{
+		return new Area(playerRekt);
+	}
+	
+	private void updateRekt(double x, double y)
+	{
+		playerRekt.setFrame(x,y,25,25);
+	}
+
+	public void tick() 
+	{
+		count ++;
+		if(count % 25 == 0)
+		{
+		addX(xVel);
+		}
+		x = Frogger.clamp(x,850,0);
+		y = Frogger.clamp(y,850,0);
+		
+		this.updateRekt((double)this.x, (double)this.y);
+	}
+
+	public void render(Graphics g)
+	{
+		g.setColor(Color.GREEN);
+		g.fillOval(x+3, y+3, 19, 19);
+		g.setColor(Color.BLACK);
+		g.fillOval(x+7, y+5, 3, 3);
+		g.fillOval(x+15, y+5, 3, 3);
+	}
+	
+	
+	public void addDeath()
+	{
+		deathCount++;
+	}
+	
+	public void displayDeathCount(Graphics g)
+	{
+		g.setColor(Color.BLACK);
+		g.drawString("Deaths:", 950, 150);
+		g.drawString(deathCount.toString(), 1000, 150);
+	}
+	
+	public void displayWins(Graphics g)
+	{
+		g.setColor(Color.BLACK);
+		g.drawString("Wins:", 950, 200);
+		g.drawString(wins.toString(), 1000, 200);
+	}
+	
+	public void addWin()
+	{
+		wins++;
+		x = 425;
+		y = 850;
+	}
+
+	public void reset()
+	{
+			x = 425;
+			y = 850;
+	}
+	
+	
+	public Rectangle getRekt()
+	{
+		return rekt;
+	}
+}
