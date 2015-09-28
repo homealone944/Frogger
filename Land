@@ -1,0 +1,33 @@
+import java.awt.Color;
+import java.awt.Graphics;
+import java.awt.Rectangle;
+
+
+public class Land extends GameObject
+{
+	private Rectangle rekt;
+	Color land = new Color(0,75,0);
+	
+	public Land(int x, int y)
+	{
+		super(x, y, ID.land);
+	}
+
+	public void tick()
+	{
+		
+	}
+
+	public void render(Graphics g)
+	{
+		g.setColor(land);
+		g.fillRect(x, y, 25, 25);
+	}
+
+	public Rectangle getRekt()
+	{
+		rekt = new Rectangle(x, y, 25, 25);
+		return null;
+	}
+
+}
