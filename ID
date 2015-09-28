@@ -1,0 +1,12 @@
+
+public enum ID
+{
+	player(),
+	log(),
+	lily(),
+	water(),
+	land(),
+	blockade(),
+	car(),
+	none();
+}
