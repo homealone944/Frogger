@@ -1,0 +1,65 @@
+import java.awt.Color;
+import java.awt.Graphics;
+import java.awt.Rectangle;
+
+
+public class Car extends GameObject
+{
+	int time = 10;
+	int count;
+	private Rectangle rekt;
+	int xVel;
+	
+	public Car(int x, int y, int vel, ID n)
+	{
+		super(x, y, n);
+		rekt = new Rectangle(x, y, 25, 25);
+		xVel = vel;
+	}
+	public Car(int x, int y, int vel, int t, ID n)
+	{
+		super(x, y, n);
+		rekt = new Rectangle(x, y, 25, 25);
+		xVel = vel;
+		time = t;
+	}
+	
+	public void tick()
+	{
+		count ++;
+		if(count % time == 0)
+		{
+			addX(xVel);
+			this.updateRekt(this.x, this.y);
+		
+			if(this.getX() < 25)
+			{
+				setX(825);
+			}
+			if(this.getX() > 825)
+			{
+				setX(25);
+			}
+		}
+	}
+	
+	private void updateRekt(int x, int y)
+	{
+		rekt = new Rectangle(x, y, 25, 25);
+	}
+	
+	public void render(Graphics g)
+	{
+		g.setColor(Color.BLACK);
+		g.fillRect(x, y, 25, 25);
+		g.setColor(Color.WHITE);
+		g.fillRect(x+2, y+2 ,21, 21);
+		
+	}
+
+	public Rectangle getRekt()
+	{
+		return rekt;
+	}
+
+}
