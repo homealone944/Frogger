@@ -1,0 +1,441 @@
+import java.awt.Canvas;
+import java.awt.Color;
+import java.awt.Graphics;
+import java.awt.image.BufferStrategy;
+import java.awt.image.ImageObserver;
+import java.util.ArrayList;
+
+
+public class Frogger extends Canvas  implements Runnable, ImageObserver
+{
+	final int HEIGHT = 903, WIDTH = 1081;
+	private Thread thread;
+	
+	public Integer frames;
+	Handler handler;
+	KeyInput input;
+	
+	private boolean die = false;
+	private boolean running = false;
+	public int direction = 0;		// 1 up, 2 down, 3 left, 4 right
+	
+	private ArrayList<GameObject> water;
+	private ArrayList<GameObject> blockade;
+	private ArrayList<GameObject> inWater;
+	private ArrayList<GameObject> onRoad;
+	
+	
+	Player user;
+	
+	public Frogger()
+	{
+		handler = new Handler();
+		input = new KeyInput(handler, this);
+		this.addKeyListener(input);
+		
+		Window window = new Window(WIDTH, HEIGHT, "Homemade Frogger by: Josh", this);
+		
+		blockade = new ArrayList<GameObject>();
+		water = new ArrayList<GameObject>();
+		inWater = new ArrayList<GameObject>();
+		onRoad = new ArrayList<GameObject>();
+		
+		map();
+		
+		user = new Player(425, 850, ID.player);
+		handler.add(user);
+		
+	}
+	
+	private void tick()			//to-do: test if hit car  just like water one
+	{
+		handler.tick();
+		remDup();
+		
+		user.setXVel(0);
+		
+		if(user.getY() == 0)
+		{
+			user.addWin();
+			user.reset();
+		}
+		
+		for(int i = 0; i < blockade.size(); i++)
+		{
+			GameObject temp = blockade.get(i);								//blockade
+			if(user.getPlayerRekt().intersects(temp.getRekt()))
+				{
+					if(direction == 1)
+						user.setY(user.getY()+25);
+					else if(direction == 2)
+						user.setY(user.getY()-25);
+					else if(direction == 3)
+						user.setX(user.getX()-25);
+					else if(direction == 4)
+						user.setX(user.getX()+25);
+					setDirection(0);
+				}
+		}
+		for(int i = 0; i < inWater.size(); i++)	
+		{
+			GameObject temp = inWater.get(i);
+			if(user.getPlayerRekt().intersects(temp.getRekt()))				//log or lily
+			{
+				if(temp.getID() == ID.log)
+				{
+					user.setXVel(temp.getVelX());
+				}
+			}
+			for(int ii = 0; ii < water.size(); ii++)					//water
+			{
+				remDup();
+				GameObject temp2 = water.get(ii);
+				if(user.getPlayerRekt().intersects(temp2.getRekt()))
+				{
+					die = true;
+				}
+			}
+		}
+		
+		for(int i = 0; i < onRoad.size(); i++)					//car
+		{
+			GameObject temp = onRoad.get(i);
+			if(user.getPlayerRekt().intersects(temp.getRekt()))
+			{
+				die = true;
+			}
+		}
+		
+		if (die)
+	    {
+	    	user.addDeath();
+	    	die = false;
+	    	user.reset();
+	    }
+	}
+	
+	private void map()			//only one map; initiate all objects here
+	{
+		basicMap();
+		blockadeLine();
+		lilyLine();
+		logLine();
+		carLine();
+		
+		
+		remDup();
+	}
+	
+	public void remDup()
+	{
+		for(int l = 0; l < inWater.size(); l ++)
+		{
+			for(int i = 0; i < water.size(); i ++)
+			{
+				GameObject a = inWater.get(l);
+				GameObject b = water.get(i);
+				if((a.getX() == b.getX()) && (a.getY() == b.getY()))
+				{
+					if(a.getID() == ID.lily)
+					{
+						water.remove(i);
+						i--;
+					}
+					if(a.getID() == ID.log)
+					{
+						if(a.getVelX() > 0)
+							replace(a.getX()-25, a.getY());
+						if(a.getVelX() < 0)
+							replace(a.getX()+25, a.getY());
+						water.remove(i);
+						i--;
+					}
+				}
+			}
+		}
+	}
+
+	public void lilyLine()
+	{
+		lily(450,800);
+		lily(400,800);
+		lily(425, 300);
+		for(int y = 275; y > 125; y -= 25)
+			lily(425,y);
+		
+	}
+	public void blockadeLine()
+	{
+		blockade(375,850);
+		blockade(475,850);
+		blockade(350,825);
+		blockade(500,825);
+		blockade(425,775);
+		blockade(800,775);
+		blockade(50,775);
+	}
+	public void basicMap()
+	{
+		makeLand(0);
+		makeLand(25);
+		makeLand(50);
+		makeLand(75);
+		makeLand(100);
+		makeLand(125);
+		makeWater(150);
+		makeWater(175);
+		makeWater(200);
+		makeWater(225);
+		makeWater(250);
+		makeWater(275);
+		makeWater(300);
+		makeLand(325);
+		makeLand(350);
+		makeRoad(375);
+		makeRoad(400);
+		makeLand(425);
+		makeLand(450);
+		makeRoad(475);
+		makeRoad(500);
+		makeLand(525);
+		makeLand(550);
+		makeRoad(575);
+		makeRoad(600);
+		makeLand(625);
+		makeRoad(650);
+		makeLand(675);
+		makeLand(700);
+		water(725);
+		water(750);
+		makeLand(775);
+		water(800);
+		makeLand(825);
+		makeLand(850);
+	}
+	public void carLine()
+	{
+		car(25,650,25);
+		car(225,650,25);
+		car(425,650,25);
+		car(625,650,25);
+		
+		car(150,600,25);
+		car(275,600,25);
+		car(350,600,25);
+		car(450,600,25);
+		car(575,600,25);
+		car(700,600,25);
+		car(825,600,25);
+		
+		car(150,575,-25);
+		car(300,575,-25);
+		car(450,575,-25);
+		car(600,575,-25);
+		car(750,575,-25);
+		car(525,575,-25);
+		
+		car(25,500,5,25);
+		car(150,500,5,25);
+		car(300,500,5,25);
+		car(450,500,5,25);
+		car(575,500,5,25);
+		car(700,500,5,25);
+		
+		car(25,475,25);
+		car(150,475,25);
+		car(300,475,25);
+		car(450,475,25);
+		car(575,475,25);
+		car(700,475,25);
+		
+		car(25,400,-25);
+		car(150,400,-25);
+		car(300,400,-25);
+		car(450,400,-25);
+		car(575,400,-25);
+		car(700,400,-25);
+		
+		car(25,375,5,-25);
+		car(150,375,5,-25);
+		car(300,375,5,-25);
+		car(450,375,5,-25);
+		car(575,375,5,-25);
+		car(700,375,5,-25);
+		
+	}
+	public void logLine()
+	{
+		log(800, 750, -25);		//don't place logs over x = 825
+		log(825, 750, -25);
+		log(200, 750, -25);
+		log(225, 750, -25);
+		log(575, 750, -25);
+		log(550, 750, -25);
+		
+		log(750, 725, 25);
+		log(150, 725, 25);
+		log(550, 725, 25);
+		
+	}
+	
+	public void car(int x, int y, int vel)
+	{
+		Car temp = new Car(x, y, vel, ID.car);
+		handler.add(temp);
+		onRoad.add(temp);	
+	}
+	public void car(int x, int y,int time, int vel)
+	{
+		Car temp = new Car(x, y, vel, time, ID.car);
+		handler.add(temp);
+		onRoad.add(temp);	
+	}
+	public void makeRoad(int y)
+	{
+		for(int i = 0; i < 35; i ++)
+			handler.add(new Road(i*25,y));
+	}
+	public void replace(int x, int y)
+	{
+		//if(x > 825) x = 0;
+		//if(x < 0) x = 825;
+		water.add(new Water(x,y));
+	}
+	public void blockade(int x, int y)
+	{
+		Blockade temp = new Blockade(x, y);
+		handler.add(temp);
+		blockade.add(temp);		
+	}
+	public void water(int y)
+	{
+		makeWater(y);
+		listWater(y);
+	}
+	public void lily(int x,int y)
+	{
+		Lily temp = new Lily(x, y, ID.lily);
+		handler.add(temp);
+		inWater.add(temp);
+	}
+	public void log(int x, int y, int vel)
+	{
+		Log temp = new Log(x, y, vel, ID.log);
+		handler.add(temp);
+		inWater.add(temp);
+	}
+	public void listWater(int y)
+	{
+		for(int i = 0; i < 35; i ++)
+			water.add(new Water(i*25,y));
+	}
+	public void makeLand(int y)
+	{
+		for(int i = 0; i < 35; i ++)
+			handler.add(new Land(i*25,y));
+	}
+	public void makeWater(int y)
+	{
+		for(int i = 0; i < 35; i ++)
+			handler.add(new Water(i*25,y));
+	}
+
+	
+	private void render() 
+	{
+		BufferStrategy bs = this.getBufferStrategy();
+		if(bs == null)
+		{
+			this.createBufferStrategy(3);
+			return;
+		}
+		
+		Graphics g = bs.getDrawGraphics();
+		
+		g.setColor(Color.BLACK);
+		g.fillRect(0, 0, WIDTH, HEIGHT);
+		
+		g.setColor(Color.YELLOW);
+		g.fillRect(875, 0, 200, HEIGHT);
+		g.setColor(Color.CYAN);
+		g.fillRect(875, 0, 5, HEIGHT);
+		g.fillRect(WIDTH-10, 0, 5, HEIGHT);
+		g.fillRect(875, 0, WIDTH, 5);
+		g.fillRect(875, 870, WIDTH, 5);
+		
+		handler.render(g);
+		user.displayDeathCount(g);
+		user.displayWins(g);
+		
+		g.dispose();
+		bs.show();
+	}
+	
+	public void setDirection(int n)
+	{
+		direction = n;		
+	}
+
+	public synchronized void start()
+	{
+		thread = new Thread(this);
+		thread.start();
+		running = true;
+	}
+	
+	public synchronized void stop()
+	{
+		try {
+			thread.join();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public static int clamp(int var, int max, int min)
+	{
+		if(var >= max) return var = max;
+		else if(var <= min) return var = min;
+		else return var;
+	}
+
+	public void run() 
+	{
+		this.requestFocus();
+		long lastTime = System.nanoTime();
+		double amountOfTicks = 60.0;
+		double ns = 1000000000 / amountOfTicks;
+		double delta = 0;
+		long timer = System.currentTimeMillis();
+		frames = 0;
+		while(running)
+		{
+			long now = System.nanoTime();
+			delta += (now - lastTime)/ns;
+			lastTime = now;
+			while(delta >= 1)
+			{
+				tick();
+				delta --;			
+			}
+			if(running)
+				render();
+			frames++;
+			
+			if(System.currentTimeMillis() - timer > 1000)
+			{
+				timer += 1000;
+				System.out.println("FPS: " + frames);
+				frames = 0;
+			}
+		}
+		stop();
+	}
+	
+	public static void main(String [] args)
+	{
+		new Frogger();
+	}
+
+	
+}
