@@ -1,0 +1,60 @@
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+
+public class KeyInput extends KeyAdapter {
+	private Handler handler;
+	private Frogger game;
+
+	
+	public KeyInput(Handler handler, Frogger game)
+	{
+		this.handler = handler;
+		this.game = game;
+	}
+	
+	// 1 up, 2 down, 3 left, 4 right
+	public void keyPressed(KeyEvent e)
+	{
+		int key = e.getKeyCode();
+		if(key == KeyEvent.VK_ESCAPE)
+			System.exit(1);
+		else
+		{
+			for (int i = 0; i < handler.object.size(); i++)
+			{
+				GameObject temp = handler.object.get(i);
+
+				if (temp.getID() == ID.player)
+				{			
+					
+					if (key == KeyEvent.VK_UP || key == KeyEvent.VK_W)
+					{
+						game.setDirection(1);
+						temp.addY(-25);
+						
+					}
+					if (key == KeyEvent.VK_DOWN || key == KeyEvent.VK_S)
+					{
+						game.setDirection(2);
+						temp.addY(25);
+					}
+					if (key == KeyEvent.VK_RIGHT || key == KeyEvent.VK_D)
+					{
+						game.setDirection(3);
+						temp.addX(25);
+					}
+					if (key == KeyEvent.VK_LEFT || key == KeyEvent.VK_A)
+					{
+						game.setDirection(4);
+						temp.addX(-25);
+					}
+				}
+			}
+		}
+	}
+
+	public void keyReleased(KeyEvent e)
+	{
+		
+	}
+}
