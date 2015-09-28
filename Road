@@ -1,0 +1,33 @@
+import java.awt.Color;
+import java.awt.Graphics;
+import java.awt.Rectangle;
+
+
+public class Road extends GameObject
+{
+	private Rectangle rekt;
+	
+	public Road(int x, int y)
+	{
+		super(x, y, ID.land);
+	}
+
+	public void tick()
+	{
+		
+	}
+
+	public void render(Graphics g)
+	{
+		g.setColor(Color.BLACK);
+		g.fillRect(x, y, 25, 25);
+		g.setColor(Color.YELLOW);
+		g.fillRect(x+7, y+10, 10 , 5);
+	}
+
+	public Rectangle getRekt()
+	{
+		rekt = new Rectangle(x, y, 25, 25);
+		return null;
+	}
+}
